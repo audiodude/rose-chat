@@ -1,3 +1,6 @@
+var MSG_LIFETIME_MS = 10000;
+var MSG_FADEOUT_MS = 18000;
+
 // Shows a message with x/y coords encapsulated in an object. Split out here so
 // that it can be used to show our own messages as well as received ones.
 function showMessage(data) {
@@ -5,7 +8,16 @@ function showMessage(data) {
   // This should escape HTML and protect us against XSS.
   $(el).text(data.msg);
   $(el).css({'left': data.x + 'px', 'top': data.y + 'px'});
-  $('#area').append(el)
+  $('#area').append(el);
+
+  data.element = el;
+  setTimeout($.proxy(fadeOutMessage, null, data), MSG_LIFETIME_MS);
+}
+
+function fadeOutMessage(data) {
+  $(data.element).fadeOut(MSG_FADEOUT_MS, function() {
+    $(data.element).remove();
+  });
 }
 
 var socket = io.connect('http://rose.0-z-0.com');
