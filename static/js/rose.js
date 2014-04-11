@@ -1,13 +1,28 @@
 var MSG_LIFETIME_MS = 10000;
 var MSG_FADEOUT_MS = 18000;
 
+String.prototype.hashCode = function() {
+  var hash = 0, i, chr, len;
+  if (this.length == 0) return hash;
+  for (i = 0, len = this.length; i < len; i++) {
+    chr   = this.charCodeAt(i);
+    hash  = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+};
+
 // Shows a message with x/y coords encapsulated in an object. Split out here so
 // that it can be used to show our own messages as well as received ones.
 function showMessage(data) {
   var el = $('<div class="msg"></div>')
   // This should escape HTML and protect us against XSS.
   $(el).text(data.msg);
-  $(el).css({'left': data.x + 'px', 'top': data.y + 'px'});
+  $(el).css({
+    'left': data.x + 'px',
+    'top': data.y + 'px',
+    'color': data.color
+  });
   $('#area').append(el);
 
   data.element = el;
@@ -25,6 +40,11 @@ var socket = io.connect('http://rose.0-z-0.com');
 // Show received messages.
 socket.on('msg', function(data) {
   showMessage(data);
+});
+
+var color;
+socket.on('color', function(data) {
+  color = data.color;
 });
 
 // Update the count when count messages are received.
@@ -53,7 +73,8 @@ function onAreaClicked(evt) {
     var msgData = {
       x: evt.offsetX,
       y: evt.offsetY,
-      msg: input.val()
+      msg: input.val(),
+      color: color //Local color only. Color for peers is set by server.
     }
     socket.emit('msg', msgData);
     showMessage(msgData);  //See your own messages.

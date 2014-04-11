@@ -4,6 +4,17 @@ var app = require('http').createServer(handler)
 
 app.listen(5000);
 
+String.prototype.hashCode = function() {
+  var hash = 0, i, chr, len;
+  if (this.length == 0) return hash;
+  for (i = 0, len = this.length; i < len; i++) {
+    chr   = this.charCodeAt(i);
+    hash  = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+};
+
 function handler (req, res) {
   fs.readFile(__dirname + '/index.html', function (err, data) {
     if (err) {
@@ -22,7 +33,20 @@ io.sockets.on('connection', function (socket) {
   socket.broadcast.emit('count', {count: count});
   socket.emit('count', {count: count});
 
+  var hash = socket.id.hashCode();
+  var r = hash & 255;
+  var g = (hash >> 8) & 255;
+  var b = (hash >> 16) & 255;
+  var a = (hash >> 24) & 255;
+  if (a < 128) {
+    a = 128;
+  }
+  var color = 'rgba('+r+','+g+','+b+','+a+')';
+  // Tell the client it's color for local messages.
+  socket.emit('color', {color: color});
+
   socket.on('msg', function(data) {
+    data.color = color;
     socket.broadcast.emit('msg', data);
   });
 
