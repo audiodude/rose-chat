@@ -5,14 +5,9 @@ var io = require('socket.io')(http);
 
 app.use(express.static('public'));
 
-http.listen(3000, function(){
-  console.log('listening on *:3000');
+http.listen(process.env.PORT, function(){
+  console.log('listening on ' + process.env.PORT);
 });
-
-
-// var app = require('http').createServer(handler)
-// , io = require('socket.io').listen(app)
-// , fs = require('fs')
 
 String.prototype.hashCode = function() {
   var hash = 0, i, chr, len;
