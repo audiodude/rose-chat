@@ -35,7 +35,7 @@ function fadeOutMessage(data) {
   });
 }
 
-var socket = io.connect('http://rose.0-z-0.com');
+var socket = io();
 
 // Show received messages.
 socket.on('msg', function(data) {

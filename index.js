@@ -1,8 +1,18 @@
-var app = require('http').createServer(handler)
-, io = require('socket.io').listen(app)
-, fs = require('fs')
+var express = require('express');
+var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
-app.listen(5000);
+app.use(express.static('public'));
+
+http.listen(3000, function(){
+  console.log('listening on *:3000');
+});
+
+
+// var app = require('http').createServer(handler)
+// , io = require('socket.io').listen(app)
+// , fs = require('fs')
 
 String.prototype.hashCode = function() {
   var hash = 0, i, chr, len;
@@ -28,7 +38,7 @@ function handler (req, res) {
 }
 
 var count = 0;
-io.sockets.on('connection', function (socket) {
+io.on('connection', function (socket) {
   count += 1;
   socket.broadcast.emit('count', {count: count});
   socket.emit('count', {count: count});
