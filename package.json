@@ -5,7 +5,7 @@
   "description": "Simple chat toy using socket.io",
   "license": "MIT",
   "engines": {
-    "node": ">=5.3.0"
+    "node": ">=6.11.1"
   },
   "dependencies": {
     "express": "^4.10.2",
